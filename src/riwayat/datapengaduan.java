@@ -297,7 +297,7 @@ public class datapengaduan extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-       ukk.menu.menuAdmin menu = new ukk.menu.menuAdmin();
+       ukk.menu.menuPelapor menu = new ukk.menu.menuPelapor();
     
     // 2. Menampilkan Menu Admin
     menu.setVisible(true);

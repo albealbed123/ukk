@@ -446,7 +446,7 @@ public class pengaduan extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_namaActionPerformed
 
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
-        String sql = "select * from masyarakat where nik='" + txt_nik.getText() + "'";  
+        String sql = "select * from user where nik='" + txt_nik.getText() + "'";  
         try {
             
             

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import Koneksi.Koneksi;
+import ukk.admin.registrasiWaka;
 import ukk.menu.menuAdmin;
 import ukk.menu.menuWaka;
 import ukk.session;
@@ -21,12 +22,12 @@ import ukk.session;
  *
  * @author ASUS TUF GAMING
  */
-public class login extends javax.swing.JFrame {
+public class loginpelapor extends javax.swing.JFrame {
 Connection conn = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
 
-    public login() {
+    public loginpelapor() {
          initComponents();
         conn = Koneksi.KoneksiDB();
         this.setLocationRelativeTo(null);
@@ -119,20 +120,15 @@ Connection conn = null;
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-      String nik = usernameTxt.getText();
-    String password = passwordTxt.getText();
+        String sql = "SELECT username, role FROM petugas WHERE username=? AND password=?";
 
-    if (nik.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Silahkan isi NIK dan Password");
-        return;
-    }
-
+if (usernameTxt.getText().isEmpty() || passwordTxt.getText().isEmpty()) {
+    JOptionPane.showMessageDialog(null, "Silahkan isi username dan password");
+} else {
     try {
-
-        String sql = "SELECT nik, role FROM user WHERE nik=? AND password=?";
         pst = conn.prepareStatement(sql);
-        pst.setString(1, nik);
-        pst.setString(2, password);
+        pst.setString(1, usernameTxt.getText());
+        pst.setString(2, passwordTxt.getText());
 
         rs = pst.executeQuery();
 
@@ -140,33 +136,36 @@ Connection conn = null;
 
             String roleDB = rs.getString("role");
 
-            // ✅ HANYA BOLEH PELAPOR
-            if (roleDB.equalsIgnoreCase("pelapor")) {
+            if (roleDB.equalsIgnoreCase("admin")) {
 
-                session.setNik(rs.getString("nik"));
-                session.setRole(roleDB);
+                // LANGSUNG BUKA MENU ADMIN (tanpa session)
+                new menuAdmin().setVisible(true);
 
-                new menuPelapor().setVisible(true);
-                this.dispose();
+            } else if (roleDB.equalsIgnoreCase("waka")) {
+
+                new menuWaka().setVisible(true);
 
             } else {
-                JOptionPane.showMessageDialog(null, 
-                    "Login ditolak! Akun ini bukan Pelapor.");
+                JOptionPane.showMessageDialog(null, "Role tidak dikenali!");
+                return;
             }
 
+            this.dispose();
+
         } else {
-            JOptionPane.showMessageDialog(null, "NIK / Password salah!");
+            JOptionPane.showMessageDialog(null, "Username / Password salah!");
         }
 
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, e);
+        JOptionPane.showMessageDialog(null, e.getMessage());
     }
+}
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
     // TODO add your handling code here:
-                        register register = new register();
+                        registrasiWaka register = new registrasiWaka();
                         register.setVisible(true);
                         this.setVisible(false);
                         this.dispose();
@@ -189,20 +188,21 @@ Connection conn = null;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(loginpelapor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(loginpelapor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(loginpelapor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(loginpelapor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new login().setVisible(true);
+                new loginpelapor().setVisible(true);
             }
         });
     }

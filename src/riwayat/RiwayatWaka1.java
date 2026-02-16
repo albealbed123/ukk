@@ -457,10 +457,10 @@ public class RiwayatWaka1 extends javax.swing.JFrame {
         // TODO add your handling code here:                                        
     // 1. Memanggil objek Menu Admin
     // Sesuaikan nama class dengan file menu utama Anda (berdasarkan gambar: menuAdmin)
-    ukk.menu.menuPelapor menu = new ukk.menu.menuPelapor();
+    ukk.menu.menuWaka waka = new ukk.menu.menuWaka();
     
-    // 2. Menampilkan Menu Admin
-    menu.setVisible(true);
+    // 2. Menampilkan Menu waka
+    waka.setVisible(true);
     
     // 3. Menutup halaman Riwayat Aspirasi saat ini
     this.dispose();

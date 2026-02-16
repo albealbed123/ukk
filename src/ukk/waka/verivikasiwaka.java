@@ -185,7 +185,7 @@ public class verivikasiwaka extends javax.swing.JFrame {
         txt_isi.setBorder(null);
         jPanel1.add(txt_isi, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 210, -1));
 
-        jButton3.setBackground(new java.awt.Color(0,0,0,0));
+        jButton3.setText("update");
         jButton3.setBorder(null);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,7 +194,7 @@ public class verivikasiwaka extends javax.swing.JFrame {
         });
         jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 430, 50, 20));
 
-        jButton7.setBackground(new java.awt.Color(0,0,0,0));
+        jButton7.setText("exit");
         jButton7.setBorder(null);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -203,6 +203,7 @@ public class verivikasiwaka extends javax.swing.JFrame {
         });
         jPanel1.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 430, 50, 20));
 
+        jButton6.setText("cari");
         jButton6.setBorder(null);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -211,6 +212,7 @@ public class verivikasiwaka extends javax.swing.JFrame {
         });
         jPanel1.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 50, 60, 20));
 
+        jButton2.setText("save");
         jButton2.setBorder(null);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -385,8 +387,8 @@ public class verivikasiwaka extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-         ukk.login_register.login login = new ukk.login_register.login();
-        login.setVisible(true);
+         ukk.menu.menuWaka menuWaka = new ukk.menu.menuWaka();
+        menuWaka.setVisible(true);
         this.setVisible(false);
         this.dispose();
         // TODO add your handling code here:

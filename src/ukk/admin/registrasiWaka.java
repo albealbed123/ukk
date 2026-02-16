@@ -37,14 +37,14 @@ public class registrasiWaka extends javax.swing.JFrame {
     public registrasiWaka() {
         initComponents();
         setLocationRelativeTo(this);// membuat tengah form
-        conn = Koneksi.Koneksi.KoneksiDB(); //javaConnect = nama file || Connection = nama method
+        conn = Koneksi.Koneksi.KoneksiDB();
+        tampilId();//javaConnect = nama file || Connection = nama method
         
         //memberi penamaan pada judul kolom ; 
         model = new DefaultTableModel();
         jTable1.setModel(model);
-        model.addColumn("nik");
-       // model.addColumn("Username");
-        model.addColumn("Nama");
+        model.addColumn("id_petugas");
+        model.addColumn("Username");
         model.addColumn("Role");
         getData();//memanggil method getdata
         
@@ -55,16 +55,16 @@ void getData() {
     
     try {
         //membuat statement pemanggilan data pada table surat_masuk dari database 
-        String sql = "select * from masyarakat";
+        String sql = "select * from petugas";
         pst = conn.prepareStatement(sql);
         rs = pst.executeQuery();
         
         //penelusuran baris pada table surat_masuk dari database
         while (rs.next()) {
             Object[] obj = new Object[4];
-            obj[0] = rs.getString("nik");
-            //obj[1] = rs.getString("username");
-            obj[1] = rs.getString("nama");
+            obj[0] = rs.getString("id_petugas");
+            obj[1] = rs.getString("username");
+            //obj[2] = rs.getString("");
             obj[2] = rs.getString("role");
             model.addRow(obj);
         }
@@ -75,20 +75,32 @@ void getData() {
  //menampilkan data dr tabel ke masing-masing komponen cara 2
    void pilihData() {
        int i = jTable1.getSelectedRow();
-       txt_nik.setText(model.getValueAt(i, 0).toString());
-      // txt_username.setText(model.getValueAt(i, 1).toString());
-       txt_nama.setText(model.getValueAt(i, 2).toString());
+       txt_username.setText(model.getValueAt(i, 1).toString());
        
    } 
    
    void bersih() {
-       txt_nik.setText("");
-      // txt_username.setText("");
+       txt_id.setText("");
        txt_password.setText("");
-       txt_nama.setText("");
+       txt_username.setText("");
        cmb_cari.setSelectedItem("");
        
    }
+   
+   void tampilId() {
+    try {
+        String sql = "SELECT IFNULL(MAX(id_petugas), 0) + 1 AS id FROM petugas";
+        pst = conn.prepareStatement(sql);
+        rs = pst.executeQuery();
+
+        if (rs.next()) {
+            txt_id.setText(rs.getString("id"));
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, e);
+    }
+}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -99,8 +111,7 @@ void getData() {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        txt_nik = new javax.swing.JTextField();
-        txt_nama = new javax.swing.JTextField();
+        txt_username = new javax.swing.JTextField();
         txt_password = new javax.swing.JPasswordField();
         txt_cari = new javax.swing.JTextField();
         cmb_cari = new javax.swing.JComboBox<>();
@@ -112,27 +123,20 @@ void getData() {
         jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        role = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
+        cmb_role = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        txt_id = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registrasi Masyarakat");
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txt_nik.setBorder(null);
-        txt_nik.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_nikActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txt_nik, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, 220, 20));
-
-        txt_nama.setBorder(null);
-        jPanel1.add(txt_nama, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 220, 20));
+        txt_username.setBorder(null);
+        jPanel1.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 220, 20));
 
         txt_password.setBorder(null);
         jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 190, 220, 20));
@@ -233,13 +237,10 @@ void getData() {
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 120, 460, 160));
 
-        role.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin", "waka" }));
-        jPanel1.add(role, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 220, 220, -1));
+        cmb_role.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin", "waka" }));
+        jPanel1.add(cmb_role, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 220, 220, -1));
 
-        jLabel1.setText("nik/nisn");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 120, -1, -1));
-
-        jLabel2.setText("nama");
+        jLabel2.setText("username");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 160, -1, -1));
 
         jLabel3.setText("password");
@@ -247,6 +248,18 @@ void getData() {
 
         jLabel4.setText("role");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, -1, -1));
+
+        jLabel1.setText("id");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, -1, -1));
+
+        txt_id.setEditable(false);
+        txt_id.setBackground(new java.awt.Color(204, 204, 204));
+        txt_id.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_idActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txt_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, 220, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -263,22 +276,33 @@ void getData() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       try {
-           String nik = txt_nik.getText();
-           String nama = txt_nama.getText();
-          // String username = txt_username.getText();
-           String password = txt_password.getText();
-       
-       
-           String sql = "UPDATE masyarakat set nik ='" + nik + "', nama='" + nama + "', password='" + password + "'";
-           pst = conn.prepareStatement(sql);
-           pst.execute();
-           JOptionPane.showMessageDialog(null, "UPDATE SUKSES");
-       } catch (Exception e) {
-           JOptionPane.showMessageDialog(null, e);
-       }
-       getData();
-       bersih();      
+        try {
+
+    String id = txt_id.getText();
+    String username = txt_username.getText();
+    String password = txt_password.getText();
+    String role = cmb_role.getSelectedItem().toString();
+
+    String sql = "UPDATE petugas SET username=?, password=?, role=? WHERE id_petugas=?";
+
+    pst = conn.prepareStatement(sql);
+    pst.setString(1, username);
+    pst.setString(2, password);
+    pst.setString(3, role);
+    pst.setString(4, id);
+
+    pst.executeUpdate();
+
+    JOptionPane.showMessageDialog(null, "Update Berhasil");
+
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(null, "Gagal Update: " + e.getMessage());
+}
+
+getData();
+bersih();
+
+     
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -288,13 +312,11 @@ void getData() {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
        try{
-           String sql = "insert into masyarakat (nik, nama, password, role)values(?,?,?,?)";
+           String sql = "insert into petugas (username, password, role)values(?,?,?)";
            pst = conn.prepareStatement(sql);
-           pst.setString(1, txt_nik.getText());
-           pst.setString(2, txt_nama.getText());
-          // pst.setString(3, txt_username.getText());
-           pst.setString(3, txt_password.getText());
-           pst.setString(4, role.getSelectedItem().toString());
+           pst.setString(1, txt_username.getText());
+           pst.setString(2, txt_password.getText());
+           pst.setString(3, cmb_role.getSelectedItem().toString());
            pst.execute();
            JOptionPane.showMessageDialog(null, "saved");
        } catch (Exception e) {
@@ -308,28 +330,41 @@ void getData() {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        bersih();
        getData();
+       tampilId();
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-       int p = JOptionPane.showConfirmDialog(null, 
-               "Apakah benar-benar akan dihapus permanen ? ",
-               " Delete",
-               JOptionPane.YES_NO_OPTION);
-       if (p == 0) {
-           String sql = "delete from masyarakat where num=?";
-           try {
-               pst = conn.prepareStatement(sql);
-               pst.setString(1, txt_nik.getText());
-               
-               pst.execute();
-               JOptionPane.showMessageDialog(null, "deleted");
-           } catch (Exception e) {
-               JOptionPane.showMessageDialog(null, e);
-           }
-           getData();
-           bersih();
-       }        
+      int p = JOptionPane.showConfirmDialog(
+        null,
+        "Apakah benar-benar akan dihapus permanen ?",
+        "Delete",
+        JOptionPane.YES_NO_OPTION);
+
+if (p == JOptionPane.YES_OPTION) {
+
+    String sql = "DELETE FROM petugas WHERE id_petugas=?";
+
+    try {
+        pst = conn.prepareStatement(sql);
+        pst.setInt(1, Integer.parseInt(txt_id.getText())); // ✅ pakai id
+
+        int rows = pst.executeUpdate(); // pakai executeUpdate untuk delete
+
+        if (rows > 0) {
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
+        } else {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+    }
+
+    bersih();
+    getData();
+}
+    
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -346,21 +381,20 @@ void getData() {
          model.fireTableDataChanged();
          try {
               if (cmb_cari.getSelectedIndex() == 0) {
-                    sql = "SELECT * FROM masyarakat where num like '%" + txt_cari.getText() + "%' ";
+                    sql = "SELECT * FROM petugas where id_petugas like '%" + txt_cari.getText() + "%' ";
                     
                }
               if (cmb_cari.getSelectedIndex() == 1) {
-                    sql = "SELECT * FROM masyarakat where nama like '%" + txt_cari.getText() + "%' ";
+                    sql = "SELECT * FROM petugas where username like '%" + txt_cari.getText() + "%' ";
                }
                 
               pst = conn.prepareStatement(sql);
               rs = pst.executeQuery();
                 
               while (rs.next()) {
-                  Object[] obj = new Object[5];
-                  obj[0] = rs.getString("nik");
-                  //obj[1] = rs.getString("username");
-                  obj[1] = rs.getString("nama");
+                  Object[] obj = new Object[2];
+                  obj[0] = rs.getString("id_petugas");
+                  obj[1] = rs.getString("username");
                   
                     
                     
@@ -378,26 +412,27 @@ void getData() {
     }//GEN-LAST:event_jButton6MouseClicked
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-       jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
     public void mouseClicked(java.awt.event.MouseEvent evt) {
-        int selectedRow = jTable1.getSelectedRow(); // Mendapatkan baris yang dipilih
 
-        // Mengambil data dari setiap kolom pada baris yang dipilih
-        String nik = jTable1.getValueAt(selectedRow, 0).toString();
-        String nama = jTable1.getValueAt(selectedRow, 2).toString();
-        String username = jTable1.getValueAt(selectedRow, 1).toString();
-//        String password = jTable1.getValueAt(selectedRow, 3).toString();
-//        String telp = jTable1.getValueAt(selectedRow, 3).toString();
-//        String level = jTable1.getValueAt(selectedRow, 4).toString();
+        int selectedRow = jTable1.getSelectedRow();
 
-        // Mengisi JTextField atau JComboBox dengan data yang diambil
-        txt_nik.setText(nik);
-        txt_nama.setText(nama);
-//        txt_username.setText(username);
-//        txt_password.setText(password);
-      
+        if (selectedRow != -1) {
+
+            // Ambil data dari tabel sesuai index kolom
+            String id = jTable1.getValueAt(selectedRow, 0).toString();
+            String username = jTable1.getValueAt(selectedRow, 1).toString();
+            String role = jTable1.getValueAt(selectedRow, 2).toString();
+
+            // Masukkan ke field
+            txt_id.setText(id);
+            txt_username.setText(username);
+            cmb_role.setSelectedItem(role);  // Untuk JComboBox
+
+        }
     }
 });
+
         // TODO add your handling code here:
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -405,9 +440,9 @@ void getData() {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_cariActionPerformed
 
-    private void txt_nikActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nikActionPerformed
+    private void txt_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_idActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_nikActionPerformed
+    }//GEN-LAST:event_txt_idActionPerformed
 
     /**
      * @param args the command line arguments
@@ -449,6 +484,7 @@ void getData() {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cmb_cari;
+    private javax.swing.JComboBox<String> cmb_role;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -462,10 +498,9 @@ void getData() {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JComboBox<String> role;
     private javax.swing.JTextField txt_cari;
-    private javax.swing.JTextField txt_nama;
-    private javax.swing.JTextField txt_nik;
+    private javax.swing.JTextField txt_id;
     private javax.swing.JPasswordField txt_password;
+    private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }

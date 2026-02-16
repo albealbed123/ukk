@@ -70,32 +70,6 @@ public class Aspirasi_peng extends javax.swing.JFrame {
         
         tampilkan_data();//memanggil method getdata
        }
-    //menampilkan data kejTabel1
-//    void getData() {
-//    model.getDataVector().removeAllElements();
-//    model.fireTableDataChanged();
-//
-//    try { 
-//        String sql = "SELECT * FROM aspirasi WHERE nik = ? ORDER BY id_aspirasi ASC";
-//        pst = conn.prepareStatement(sql);
-//        pst.setString(1, session.getNik()); // ← ambil NIK dari login
-//        rs = pst.executeQuery();
-//
-//        while (rs.next()) {
-//            Object[] obj = new Object[7];
-//            obj[0] = rs.getString("id_aspirasi");
-//            obj[1] = rs.getString("nik");
-//            obj[2] = rs.getString("nama");
-//            obj[3] = rs.getString("tanggal");
-//            obj[4] = rs.getString("isi_aspirasi");
-//            obj[5] = rs.getString("kategori");
-//            obj[6] = rs.getString("status");
-//            model.addRow(obj);
-//        }
-//    } catch (Exception e) {
-//        JOptionPane.showMessageDialog(null, e);      
-//    }
-//} 
  //menampilkan data dr tabel ke masing-masing komponen cara 2
    void pilihData() {
        int i = tbAspirasi.getSelectedRow();
@@ -356,41 +330,6 @@ public class Aspirasi_peng extends javax.swing.JFrame {
 
     private void btn_simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_simpanActionPerformed
         // TODO add your handling code here:                                                                             
-//  try {
-//    // 1. Ambil data dari inputan
-//    String id_aspirasi = txt_id.getText(); 
-//    String status_baru = cb_status.getSelectedItem().toString();
-//
-//    // Validasi kalau ID kosong
-//    if (id_aspirasi.equals("")) {
-//        JOptionPane.showMessageDialog(this, "Pilih data di tabel dahulu!");
-//        return;
-//    }
-//
-//    // 2. Koneksi ke Database
-//    java.sql.Connection conn = Koneksi.Koneksi.KoneksiDB();
-//
-//    // 3. Query Update Status
-//    String sqlUpdate = "UPDATE aspirasi SET status=? WHERE id_aspirasi=?"; 
-//    
-//    java.sql.PreparedStatement pstUp = conn.prepareStatement(sqlUpdate);
-//    pstUp.setString(1, status_baru); // Mengisi tanda tanya ke-1
-//    pstUp.setString(2, id_aspirasi); // Mengisi tanda tanya ke-2
-//    
-//    int hasil = pstUp.executeUpdate();
-//
-//    // 4. Cek hasil
-//    if (hasil > 0) {
-//        JOptionPane.showMessageDialog(null, "Status berhasil diperbarui!");
-//        tampilkan_data(); // Panggil fungsi refresh tabel kamu
-//        bersih();         // Panggil fungsi reset form kamu
-//    }
-//    
-//} catch (Exception e) {
-//    // Pastikan bagian ini TIDAK berisi "throw new UnsupportedOperationException"
-//    JOptionPane.showMessageDialog(this, "Gagal Update: " + e.getMessage());
-//}
-
             String tampilan="yyyy-MM-dd";
         SimpleDateFormat fm = new SimpleDateFormat(tampilan);
         String tanggal=String.valueOf(fm.format(txt_tanggal.getDate()));
@@ -551,7 +490,7 @@ public class Aspirasi_peng extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_statusfilActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-                String sql = "select * from masyarakat where nik='" + txt_nik.getText() + "'";  
+                String sql = "select * from user where nik='" + txt_nik.getText() + "'";  
         try {
             
             

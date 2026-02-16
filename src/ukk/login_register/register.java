@@ -40,29 +40,7 @@ public class register extends javax.swing.JFrame {
         setLocationRelativeTo(this);// membuat tengah form
         conn = Koneksi.Koneksi.KoneksiDB(); //javaConnect = nama file || Connection = nama method
     }
-//void getData() {
-//    model.getDataVector().removeAllElements();
-//    model.fireTableDataChanged();
-//    
-//    try {
-//        //membuat statement pemanggilan data pada table surat_masuk dari database 
-//        String sql = "select * from masyarakat";
-//        pst = conn.prepareStatement(sql);
-//        rs = pst.executeQuery();
-//        
-//        //penelusuran baris pada table surat_masuk dari database
-//        while (rs.next()) {
-//            Object[] obj = new Object[4];
-//            obj[0] = rs.getString("nik");
-//            //obj[1] = rs.getString("username");
-//            obj[1] = rs.getString("nama");
-//            obj[2] = rs.getString("role");
-//            model.addRow(obj);
-//        }
-//    } catch (Exception e) {
-//        JOptionPane.showMessageDialog(null, e);      
-//    }
-//} 
+ 
    void bersih() {
        txt_nik.setText("");
        txt_password.setText("");
@@ -107,11 +85,11 @@ public class register extends javax.swing.JFrame {
                 txt_namaActionPerformed(evt);
             }
         });
-        jPanel1.add(txt_nama, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 620, 560, 40));
+        jPanel1.add(txt_nama, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 480, 560, 40));
 
         txt_password.setBackground(new java.awt.Color(0,0,0,0));
         txt_password.setBorder(null);
-        jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 480, 560, 40));
+        jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 620, 560, 40));
 
         jButton4.setBackground(new java.awt.Color(0,0,0,0));
         jButton4.setBorder(null);
@@ -151,7 +129,7 @@ public class register extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
        try{
-           String sql = "insert into masyarakat (nik,nama,password,role)values(?,?,?,?)";
+           String sql = "insert into user (nik,nama,password,role)values(?,?,?,?)";
            pst = conn.prepareStatement(sql);
            pst.setString(1, txt_nik.getText());
            pst.setString(2, txt_nama.getText());
