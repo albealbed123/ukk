@@ -5,6 +5,7 @@
  */
 package riwayat;
 
+import java.awt.BorderLayout;
 import ukk.pelapor.*;
 import ukk.*;
 import java.sql.Connection;
@@ -17,13 +18,19 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.table.TableModel;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -60,7 +67,7 @@ public class datapengaduan extends javax.swing.JFrame {
         setLocationRelativeTo(null);// membuat tengah form
         conn = Koneksi.Koneksi.KoneksiDB();
         model = new DefaultTableModel();
-        jTable1.setModel(model);
+        tabel_pengaduan.setModel(model);
 
        // tampilIdPengaduan();
 
@@ -69,7 +76,7 @@ public class datapengaduan extends javax.swing.JFrame {
         
         //memberi penamaan pada judul kolom ; 
         model = new DefaultTableModel();
-        jTable1.setModel(model);
+        tabel_pengaduan.setModel(model);
         model.addColumn("id pengaduan");
         model.addColumn("nik");
         model.addColumn("nama");
@@ -79,6 +86,7 @@ public class datapengaduan extends javax.swing.JFrame {
         model.addColumn("Kategori");
         model.addColumn("lokasi");
         model.addColumn("Status");
+        model.addColumn("Feedback");
         
         
         
@@ -88,17 +96,18 @@ public class datapengaduan extends javax.swing.JFrame {
     void getData() {
     model.getDataVector().removeAllElements();
     model.fireTableDataChanged();
-       
     
     try {
-        String sql = "SELECT * FROM pengaduan";
+        // Query untuk menggabungkan tabel pengaduan dan tanggapan
+        String sql = "SELECT pengaduan.*, tanggapan.feedback " +
+                     "FROM pengaduan " +
+                     "LEFT JOIN tanggapan ON pengaduan.id_pengaduan = tanggapan.id_pengaduan";
+        
         pst = conn.prepareStatement(sql);
         rs = pst.executeQuery();
 
-        
-        //penelusuran baris pada table surat_masuk dari database
         while (rs.next()) {
-            Object[] obj = new Object[9];
+            Object[] obj = new Object[10]; // Menambah 1 slot untuk feedback
             obj[0] = rs.getString("id_pengaduan");
             obj[1] = rs.getString("nik");
             obj[2] = rs.getString("nama");
@@ -109,13 +118,17 @@ public class datapengaduan extends javax.swing.JFrame {
             obj[7] = rs.getString("lokasi");
             obj[8] = rs.getString("status");
             
+            // Mengambil feedback, jika kosong tampilkan pesan default
+            String fb = rs.getString("feedback");
+            obj[9] = (fb == null || fb.isEmpty()) ? "Belum ada tanggapan" : fb;
+            
             model.addRow(obj);
         }
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, e);      
-    }
+        JOptionPane.showMessageDialog(null, "Gagal ambil data: " + e.getMessage());      
+    }      
+    
 }
-
     void bersih() {
      //  txt_pengaduan.setText("");
        txt_cari.setText("");
@@ -134,7 +147,7 @@ public class datapengaduan extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         filtter = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabel_pengaduan = new javax.swing.JTable();
         cmb_kategori = new javax.swing.JComboBox<>();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jDateChooser2 = new com.toedter.calendar.JDateChooser();
@@ -142,6 +155,7 @@ public class datapengaduan extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         txt_cari = new javax.swing.JTextField();
         lbl_total = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("PENGADUAN");
@@ -175,7 +189,7 @@ public class datapengaduan extends javax.swing.JFrame {
         });
         jPanel1.add(filtter, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 60, 20));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabel_pengaduan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -186,12 +200,12 @@ public class datapengaduan extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tabel_pengaduan.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
+                tabel_pengaduanMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tabel_pengaduan);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 590, 290));
 
@@ -223,8 +237,16 @@ public class datapengaduan extends javax.swing.JFrame {
         });
         jPanel1.add(txt_cari, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, 340, -1));
 
-        lbl_total.setText("TOTAL:");
+        lbl_total.setText("TOTAL DATA :");
         jPanel1.add(lbl_total, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 380, -1, -1));
+
+        jButton1.setText("Detail");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 50, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -283,7 +305,7 @@ public class datapengaduan extends javax.swing.JFrame {
                 });
             }
 
-            jTable1.setModel(modelBaru);
+            tabel_pengaduan.setModel(modelBaru);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Gagal filter: " + e.getMessage());
@@ -292,9 +314,10 @@ public class datapengaduan extends javax.swing.JFrame {
          // TODO add your handling code here:
     }//GEN-LAST:event_filtterActionPerformed
 
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+    private void tabel_pengaduanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabel_pengaduanMouseClicked
+        
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTable1MouseClicked
+    }//GEN-LAST:event_tabel_pengaduanMouseClicked
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
        ukk.menu.menuPelapor menu = new ukk.menu.menuPelapor();
@@ -320,7 +343,7 @@ public class datapengaduan extends javax.swing.JFrame {
         getData(); // method getData() sudah mengambil semua data untuk user yang login
 
         // 4️⃣ Update label total data
-        lbl_total.setText("TOTAL DATA: " + jTable1.getRowCount() + " Aspirasi");
+        lbl_total.setText("TOTAL DATA: " + tabel_pengaduan.getRowCount() + " Pengaduan");
 
         // 5️⃣ Pesan opsional
         // JOptionPane.showMessageDialog(this, "Data berhasil direfresh!");
@@ -419,7 +442,7 @@ public class datapengaduan extends javax.swing.JFrame {
             }
 
             // Menampilkan model ke JTable
-            jTable1.setModel(model);
+            tabel_pengaduan.setModel(model);
 
             // Menampilkan total data yang ditemukan
             lbl_total.setText("TOTAL HASIL: " + model.getRowCount() + " Data");
@@ -432,6 +455,84 @@ public class datapengaduan extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_cariKeyReleased
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+           int row = tabel_pengaduan.getSelectedRow();
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data terlebih dahulu!");
+        return;
+    }
+
+    // Ambil data sesuai urutan kolom di tabel
+    String id       = tabel_pengaduan.getValueAt(row, 0).toString();
+    String nik      = tabel_pengaduan.getValueAt(row, 1).toString();
+    String nama     = tabel_pengaduan.getValueAt(row, 2).toString();
+    String tanggal  = tabel_pengaduan.getValueAt(row, 3).toString();
+    String isi      = tabel_pengaduan.getValueAt(row, 4).toString(); 
+    String fotoPath = tabel_pengaduan.getValueAt(row, 5).toString(); 
+    String kategori = tabel_pengaduan.getValueAt(row, 6).toString(); 
+    String lokasi   = tabel_pengaduan.getValueAt(row, 7).toString(); 
+    String status   = tabel_pengaduan.getValueAt(row, 8).toString(); 
+
+    // PERBAIKAN: Ambil dari kolom feedback di tabel (Indeks 9)
+    String feedback = tabel_pengaduan.getValueAt(row, 9).toString(); 
+
+    StringBuilder sb = new StringBuilder();
+    
+JPanel panel = new JPanel(new BorderLayout(15, 15));
+
+// ================= PANEL TEKS =================
+sb.append("ID         : ").append(id).append("\n");
+sb.append("NIK/NISN   : ").append(nik).append("\n");
+sb.append("Nama       : ").append(nama).append("\n");
+sb.append("Tanggal    : ").append(tanggal).append("\n");
+sb.append("Kategori   : ").append(kategori).append("\n");
+sb.append("Lokasi     : ").append(lokasi).append("\n");
+sb.append("Status     : ").append(status).append("\n");
+sb.append("------------------------------------------\n");
+sb.append("Isi Pengaduan:\n").append(isi).append("\n\n");
+sb.append("Tanggapan/Feedback Admin:\n").append(feedback);
+
+JTextArea txt = new JTextArea(sb.toString());
+txt.setEditable(false);
+txt.setLineWrap(true);
+txt.setWrapStyleWord(true);
+txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+JScrollPane scrollText = new JScrollPane(txt);
+scrollText.setPreferredSize(new Dimension(350, 300));
+
+// ================= GAMBAR =================
+JLabel lblFoto = new JLabel();
+lblFoto.setHorizontalAlignment(JLabel.CENTER);
+lblFoto.setBorder(BorderFactory.createTitledBorder("Foto Lampiran"));
+lblFoto.setPreferredSize(new Dimension(250, 300));
+
+try {
+    File file = new File(fotoPath);
+    if (file.exists()) {
+        ImageIcon icon = new ImageIcon(fotoPath);
+        Image img = icon.getImage().getScaledInstance(240, 280, Image.SCALE_SMOOTH);
+        lblFoto.setIcon(new ImageIcon(img));
+    } else {
+        lblFoto.setText("Gambar tidak tersedia");
+    }
+} catch (Exception e) {
+    lblFoto.setText("Gagal memuat gambar");
+}
+
+// ================= GABUNG PANEL =================
+panel.add(scrollText, BorderLayout.CENTER);
+panel.add(lblFoto, BorderLayout.EAST);
+
+JOptionPane.showMessageDialog(
+    this, 
+    panel, 
+    "Detail Pengaduan & Feedback", 
+    JOptionPane.INFORMATION_MESSAGE
+);        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    
     /**
      * @param args the command line arguments
      */
@@ -477,6 +578,7 @@ public class datapengaduan extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cmb_kategori;
     private javax.swing.JButton filtter;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton7;
     private com.toedter.calendar.JDateChooser jDateChooser1;
@@ -485,8 +587,8 @@ public class datapengaduan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbl_total;
+    private javax.swing.JTable tabel_pengaduan;
     private javax.swing.JTextField txt_cari;
     // End of variables declaration//GEN-END:variables
     

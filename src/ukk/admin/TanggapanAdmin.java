@@ -52,14 +52,36 @@ public class TanggapanAdmin extends javax.swing.JFrame {
      */
     public TanggapanAdmin() {
         initComponents();
-        tampil_tabel();
         conn = Koneksi.KoneksiDB();
+        tampil_tabel();
         setTanggalHariIni();
         tabel_pengaduan.requestFocus();
+        getDataTanggapan();
         
         
     }
     
+   public void getDataTanggapan() {
+        DefaultTableModel model = (DefaultTableModel) tabel_feedback.getModel();
+        model.setRowCount(0);
+        try {
+        String sql = "SELECT id_tanggapan, nik, nama, tgl_tang, feedback, status FROM tanggapan";
+        pst = conn.prepareStatement(sql);
+        rs = pst.executeQuery();
+        while (rs.next()) {
+        model.addRow(new Object[]{
+        rs.getString("id_tanggapan"),
+        rs.getString("nik"),
+        rs.getString("nama"),
+        rs.getString("tgl_tang"),
+        rs.getString("feedback"),
+        rs.getString("status")
+        });
+        }
+        } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Tabel bawah gagal dimuat: " + e.getMessage());
+        }
+    }
     
     private void setTanggalHariIni() {
     txt_tgl.setDate(new Date());
@@ -137,7 +159,7 @@ public class TanggapanAdmin extends javax.swing.JFrame {
         detail = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        tabel_tanggapan = new javax.swing.JTable();
+        tabel_feedback = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txt_tglpengaduan = new com.toedter.calendar.JDateChooser();
@@ -278,23 +300,31 @@ public class TanggapanAdmin extends javax.swing.JFrame {
 
         jLabel2.setText("Feedback");
 
-        tabel_tanggapan.setModel(new javax.swing.table.DefaultTableModel(
+        tabel_feedback.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "NIK/NISN", "Nama", "Tanggal", "Feedback", "Status"
             }
-        ));
-        tabel_tanggapan.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tabel_tanggapanMouseClicked(evt);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(tabel_tanggapan);
+        tabel_feedback.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabel_feedbackMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(tabel_feedback);
 
         jLabel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -608,7 +638,7 @@ public class TanggapanAdmin extends javax.swing.JFrame {
             });
         }
 
-        tabel_tanggapan.setModel(model);
+        tabel_feedback.setModel(model);
 
     } catch (Exception e) {
         System.out.println("Error tampil data: " + e.getMessage());
@@ -699,8 +729,8 @@ try {
     // --- BAGIAN 1: INSERT KE TABEL TANGGAPAN (RIWAYAT) ---
     String sqlSimpan = "INSERT INTO tanggapan "
             + "(id_pengaduan, nik, nama, tanggal, tgl_tang, "
-            + "isi_pengaduan, kategori, lokasi, status, feedback, foto) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + "isi_pengaduan, kategori, lokasi, status, feedback, foto, id_petugas) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     PreparedStatement pst = conn.prepareStatement(sqlSimpan);
     pst.setString(1, txt_id.getText());
@@ -714,6 +744,7 @@ try {
     pst.setString(9, statusTerpilih);
     pst.setString(10, txt_tanggapan.getText());
     pst.setString(11, (pathFoto == null) ? "" : pathFoto);
+    pst.setInt(12, 1);
 
     pst.executeUpdate();
 
@@ -730,6 +761,7 @@ try {
     JOptionPane.showMessageDialog(null, "Tanggapan berhasil disimpan dan status diperbarui!");
 
     tampil_tabel();
+    getDataTanggapan();
     bersih();
 
 } catch (Exception e) {
@@ -952,7 +984,7 @@ try {
             // TODO add your handling code here:
     }//GEN-LAST:event_detailActionPerformed
 
-    private void tabel_tanggapanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabel_tanggapanMouseClicked
+    private void tabel_feedbackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabel_feedbackMouseClicked
     int baris = tabel_pengaduan.getSelectedRow();
     if (baris == -1) return; // kalau belum pilih baris
 
@@ -1022,7 +1054,7 @@ try {
     }
 
         // TODO add your handling code here:
-    }//GEN-LAST:event_tabel_tanggapanMouseClicked
+    }//GEN-LAST:event_tabel_feedbackMouseClicked
 
     private void lokasiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lokasiActionPerformed
         // TODO add your handling code here:
@@ -1092,8 +1124,8 @@ try {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextField lokasi;
+    private javax.swing.JTable tabel_feedback;
     private javax.swing.JTable tabel_pengaduan;
-    private javax.swing.JTable tabel_tanggapan;
     private javax.swing.JTextField txt_NIK;
     private javax.swing.JTextField txt_cari;
     private javax.swing.JTextField txt_id;

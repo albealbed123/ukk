@@ -6,6 +6,7 @@
 package ukk.menu;
 import riwayat.RiwayatWaka1;
 import ukk.login_register.login;
+import ukk.login_register.loginpelapor;
 import ukk.waka.verivikasiwaka;
 //import ukk.formTransaksi;
 //import ukk.formCRUDBarang;
@@ -105,8 +106,8 @@ public class menuWaka extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        login login = new login();
-        login.setVisible(true);
+        loginpelapor loginpelapor = new loginpelapor();
+        loginpelapor.setVisible(true);
         this.setVisible(false);
         this.dispose(); 
         // TODO add your handling code here:
